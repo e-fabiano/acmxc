@@ -1,1 +1,1 @@
-acmxc -p crystal -i h2o -f spl
+acmxc -p crystal -i h2o -f spl -w hpc
