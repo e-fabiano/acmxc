@@ -25,14 +25,14 @@ def manage_options():
 #
     parser.add_argument("-f","--formula",
                         default="isi",
-                        choices=["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2"],
-                        help="Formula to be used. Options: isi, revisi, genisi, spl, lb, spl2, mpacf1, dpi,hfac24, mp2",
+                        choices=["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2","hflda"],
+                        help="Formula to be used. Options: isi, revisi, genisi, spl, lb, spl2, mpacf1, dpi, hfac24, mp2, hflda",
                         metavar="<string>")
 #
     parser.add_argument("-w","-wfunc",
                         default=None,
-                        choices=["pc","hpc","mpc","hfpc"],
-                        help="W_inf functional. Options: pc, hpc, mpc,hfpc",
+                        choices=["pc","hpc","mpc","hfpc","lda"],
+                        help="W_inf functional. Options: pc, hpc, mpc, hfpc, lda",
                         metavar="<string>")
 #
     parser.add_argument("-n","-nthreads",
@@ -61,6 +61,11 @@ def manage_options():
                         default=None,
                         metavar="<string>",
                         help="Full path of a file with information for interaction eenrgy calculations")
+#
+    parser.add_argument("--rerun",  
+                        action='store_true',             
+                        default=False, 
+                        help="Rerun calculation (default=False)")
 #
     options = vars(parser.parse_args())
 #
@@ -96,6 +101,7 @@ prog_input = options["input"]
 ncpu = options["n"]
 formula = options["formula"]
 wfunc = options["w"]
+rerun = options["rerun"]
 metal_mode = options["metal"]
 intfile = options["int"]
 
@@ -108,7 +114,7 @@ intcoeff = nparray(intcoeff)
 # main loop
 acmxc_simul = []
 for path in intlist:
-    acmxc_simul.append(acmxclib.acmxc(path=path,program=program,tdir=tdir,prog_input=prog_input,ncpu=ncpu,formula=formula,wfunc=wfunc,metal_mode=metal_mode,verbose=False))
+    acmxc_simul.append(acmxclib.acmxc(path=path,program=program,tdir=tdir,prog_input=prog_input,ncpu=ncpu,formula=formula,wfunc=wfunc,rerun=rerun,metal_mode=metal_mode,verbose=False))
 
     
 tools.print_header()
@@ -119,7 +125,7 @@ i = 1
 for isimul in acmxc_simul:
     if (len(acmxc_simul)>1): print(f"==== System {i} ====")
     isimul.verbose = True
-    tools.print_options([isimul.program_name,isimul.tdir,isimul.baseinput,isimul.ncpu,isimul.acm_formula,isimul.wfunc,isimul.metal_mode,isimul.w34])
+    tools.print_options([isimul.program_name,isimul.tdir,isimul.baseinput,isimul.ncpu,isimul.acm_formula,isimul.wfunc,isimul.rerun,isimul.metal_mode,isimul.w34])
     isimul.run_program()
     isimul.extract_results()
     isimul.compute_acm_xc_energy()
