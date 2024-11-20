@@ -56,6 +56,8 @@ def print_refs(formula):
         refstri="J. Phys. Chem. Lett xx, yyy, (2025)"
     elif (formula == "mp2"):
         refstri="Phys. Rev. 46,  618 (1934)"
+    elif (formula == "lda"):
+        refstri="Phys. Rev. 140, A1133 (1965)"
     else:
         refstri=""
     print(f"  Ref: {refstri}")
