@@ -29,7 +29,9 @@ def compute_acm(formula,xene,wene,w1ene,w34ene,mp2ene):
     elif (formula == "mp2"):
         correne = mp2ene
     elif (formula == "mpacf1"):
-        correne = compute_mpacf1(xene,wene,mp2ene) 
+        correne = compute_mpacf1(xene,wene,mp2ene)
+    elif (formula == "hflda"):
+        correne = compute_hflda(xene,wene,mp2ene)
     else:
         tools.error(f"Formula {formula} not implemented!")
     return correne
@@ -76,6 +78,8 @@ def autoset_wfunc(formula):
         wfunc = "pc"
     elif (formula == "hfac24"):
         wfunc = "hfpc"
+    elif (formula == "hflda"):
+        wfunc = "lda"
     elif (formula == "mp2"):
         wfunc = "pc"
     else:
@@ -272,3 +276,8 @@ def compute_hfac24(xene,wene,w1ene,w34ene,mp2ene):
             hfac24wc = hfac24_wc(ll,xene,wene,w1ene,w34ene,mp2ene)
         cene = nptrapz(hfac24wc,ll)
         return cene
+
+
+def compute_hflda(xene,wene,mp2ene):
+    cene=wene
+    return cene
