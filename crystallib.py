@@ -5,10 +5,10 @@ import shutil
 
 class crystal:
 
-    allowed_wfunc = ["pc", "hpc"]
+    allowed_wfunc = ["pc", "hpc", "lda"]
 
     
-    def __init__(self,tdir,ncpu,wfunc,baseinput,metal_mode,path):
+    def __init__(self,tdir,ncpu,wfunc,rerun,baseinput,metal_mode,path):
         self.ncpu = ncpu
         self.set_wfunc(wfunc)
         self.tdir = self.check_crystal_dir(tdir)
@@ -17,6 +17,8 @@ class crystal:
         self.check_input(metal_mode,path)
         self.scf_file_name = "scf.out"
         self.w_file_name = "w.out"
+        self.rerun = rerun
+        self.guessp = False
         self.mp2_file_name = "mp2.out"
 
 
@@ -73,7 +75,7 @@ class crystal:
 
     
     def run_scf_and_w(self):
-        if (os.path.isfile(self.scf_file_name) and self.check_scf_convergence()):
+        if (os.path.isfile(self.scf_file_name) and self.check_scf_convergence() and self.rerun == False):
             print("already done")
         else:
 #       SCF part
@@ -83,7 +85,14 @@ class crystal:
 
 
     def run_scf(self):
-        subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        with open(self.baseinput +".d12", 'r') as file: 
+             content = file.read()     
+             if "GUESSP" in content:
+                self.guessp = True
+        if (self.guessp == False):
+            subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         shutil.move(self.baseinput + ".out", self.scf_file_name)
         if(not self.check_scf_convergence()):
             tools.error(f"The SCF calculation did not converge.\n Check the {self.scf_file_name} file")
@@ -99,7 +108,7 @@ class crystal:
         
 
     def run_mp2(self):
-        if(os.path.isfile(self.mp2_file_name)):
+        if(os.path.isfile(self.mp2_file_name) and self.rerun == False):
             print("already done")
             return
         subprocess.run([self.cryscor_exec, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -135,13 +144,22 @@ class crystal:
             elif (self.wfunc == "hpc"):
                 stri1 = "AC-Winf-HPC"
                 stri2 = "AC-W1inf-HPC"
+            elif  (self.wfunc == "lda"):          
+                stri1 = "PERDEW-WANG LSD"         
+                stri2 = "PERDEW-WANG GGA"
             found = 0
             for line in wfile_content:
                 if (stri1 in line):
-                    self.wene = float(line.split()[1])
+                    nx = 1
+                    if (self.wfunc == "lda" ):    
+                        nx=2
+                    self.wene = float(line.split()[nx])
                     found = found + 1
                 if (stri2 in line):
-                    self.w1ene = float(line.split()[1])
+                    nx = 1
+                    if (self.wfunc == "lda" ):    
+                        nx=2
+                    self.w1ene = float(line.split()[nx])
                     found = found + 1
                 if (found == 2):
                     break
