@@ -1,1 +1,1 @@
-acmxc -p crystal -i na -f revisi -n 10 -w hpc --metal
+acmxc.py -p crystal -i na -f revisi -n 10 -w hpc --metal
