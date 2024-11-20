@@ -9,12 +9,12 @@ import sys
 class acmxc:
 
     allowed_programs_list = ["turbomole","crystal"]
-    allowed_acm_formulas = ["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2"]
-    allowed_wfunc = ["pc","hpc","mpc","hfpc"]
+    allowed_acm_formulas = ["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2","hflda"]
+    allowed_wfunc = ["pc","hpc","mpc","hfpc","lda"]
 
     
 
-    def __init__(self, program="turbomole", tdir=None, path=".", prog_input="input", ncpu=1, formula="isi", wfunc=None, metal_mode=False, verbose=True):
+    def __init__(self, program="turbomole", tdir=None, path=".", prog_input="input", ncpu=1, formula="isi", wfunc=None, rerun=False, metal_mode=False, verbose=True):
         self.verbose = verbose
         if (self.verbose): tools.print_header()
         self.set_tdir(tdir)
@@ -23,10 +23,11 @@ class acmxc:
         self.set_ncpu(ncpu)
         self.set_formula(formula)
         self.set_wfunc(wfunc,formula)
+        self.rerun = rerun
         self.set_w34(formula)
         self.set_metal_mode(metal_mode)
         self.set_program(program)
-        if (self.verbose): tools.print_options([self.program_name,self.tdir,self.baseinput,self.ncpu,self.acm_formula,self.wfunc,self.metal_mode,self.w34])
+        if (self.verbose): tools.print_options([self.program_name,self.tdir,self.baseinput,self.ncpu,self.acm_formula,self.wfunc,self.rerun,self.metal_mode,self.w34])
         
 
     def set_tdir(self,tdir):    
@@ -97,7 +98,7 @@ class acmxc:
             if (self.program_name == "turbomole"):
                 self.program = turbomolelib.turbomole(self.tdir,self.ncpu,self.wfunc,self.metal_mode,self.path)
             elif (self.program_name == "crystal"):
-                self.program = crystallib.crystal(self.tdir,self.ncpu,self.wfunc,self.baseinput,self.metal_mode,self.path)
+                self.program = crystallib.crystal(self.tdir,self.ncpu,self.wfunc,self.rerun,self.baseinput,self.metal_mode,self.path)
             self.set_tdir(self.program.tdir)
         else:
             tools.error(f"{program} is not a valid option for <program>")
