@@ -1,1 +1,1 @@
-acmxc -p turbomole -w pc
+acmxc.py -p turbomole -w pc
