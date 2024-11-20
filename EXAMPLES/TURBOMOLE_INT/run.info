@@ -1,1 +1,1 @@
-acmxc -p turbomole -n 5 --int h2o_int.info -f lb -w hpc
+acmxc.py -p turbomole -n 5 --int h2o_int.info -f lb -w hpc
