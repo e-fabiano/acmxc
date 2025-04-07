@@ -186,7 +186,7 @@ class turbomole:
         subprocess.run([self.ridft_exec,"-proper"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         shutil.copy("td.xyz","../densities.dat")
         if (uhf):
-            shutil.copy("sd.xyz","../spindens.dat")
+            shutil.copy("sd.xyz","../spindensities.dat")
 #            
         os.chdir("..")
         shutil.rmtree("TMP")
@@ -204,7 +204,7 @@ class turbomole:
 #       get spin densities (if uhf)
         if (uhf):
             spindens = []
-            with open("spindens.dat","r") as f:
+            with open("spindensities.dat","r") as f:
                 spindens_content = f.readlines()
                 for i in range(len(spindens_content)):
                     line = spindens_content[i]
@@ -258,6 +258,9 @@ class turbomole:
             found = 0
             for i, line in enumerate(wfile_content):
                 if ("exK =" in line):
+                    self.xene = float(line.split("=", 1)[1])
+                    found += 1
+                elif ("RI-K =" in line):
                     self.xene = float(line.split("=", 1)[1])
                     found += 1
                 elif ("Strong correlation functionals" in line):
