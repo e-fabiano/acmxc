@@ -114,6 +114,7 @@ intcoeff = nparray(intcoeff)
 # main loop
 acmxc_simul = []
 for path in intlist:
+    print(intlist)
     acmxc_simul.append(acmxclib.acmxc(path=path,program=program,tdir=tdir,prog_input=prog_input,ncpu=ncpu,formula=formula,wfunc=wfunc,rerun=rerun,metal_mode=metal_mode,verbose=False))
 
     
@@ -149,6 +150,8 @@ if (len(acmxc_simul)>1):
     int_w1ene = npsum(intcoeff*w1ene)
     mp2ene = nparray([isimul.mp2ene for isimul in acmxc_simul])
     int_mp2ene = npsum(intcoeff*mp2ene)
+    w34ene = nparray([isimul.w34ene for isimul in acmxc_simul])
+    int_w34ene = npsum(intcoeff*w34ene)
     correne = nparray([isimul.correne for isimul in acmxc_simul])
     int_correne = npsum(intcoeff*correne)
     int_xcene = int_xene + int_correne
@@ -156,6 +159,7 @@ if (len(acmxc_simul)>1):
     print(" %-23s %16.10f" %("Int. exchange energy:",int_xene))
     print(" %-23s %16.10f" %("Int. W_inf energy:",int_wene))
     print(" %-23s %16.10f" %("Int. W1_inf energy:",int_w1ene))
+    print(" %-23s %16.10f" %("Int. W34_inf energy:",int_w34ene)) 
     print(" %-23s %16.10f" %("Int. MP2 energy:",int_mp2ene))
     print(" %-23s %16.10f" %("Int. ACM corr. energy:",int_correne))
     print(" %-23s %16.10f" %("Int. XC energy:",int_xcene))
@@ -164,8 +168,9 @@ if (len(acmxc_simul)>1):
     inf_xene = -(int_xene - intcoeff[0]*xene[0])
     inf_wene = -(int_wene - intcoeff[0]*wene[0])
     inf_w1ene = -(int_w1ene - intcoeff[0]*w1ene[0])
+    inf_w34ene = -(int_w34ene - intcoeff[0]*w34ene[0]) 
     inf_mp2ene = -(int_mp2ene - intcoeff[0]*mp2ene[0])
-    inf_correne = acmlib.compute_acm(formula,inf_xene,inf_wene,inf_w1ene,inf_mp2ene)
+    inf_correne = acmlib.compute_acm(formula,inf_xene,inf_wene,inf_w1ene,inf_w34ene,inf_mp2ene)
     scc_correne = correne[0]*intcoeff[0] - inf_correne 
     scc_xcene = int_xene + scc_correne
     scc = scc_correne - int_correne
